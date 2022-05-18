@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       rating: {
         type: DataTypes.BIGINT,
-        allowNull: false,
+        allowNull: true,
       },
       isAvailable: {
         type: DataTypes.BOOLEAN,
