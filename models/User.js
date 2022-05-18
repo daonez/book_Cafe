@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     "User",
     {
       // 스키마 정의
-      user_id: {
+      id: {
         type: DataTypes.UUID,
         allowNull: false,
         unique: true,
