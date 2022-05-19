@@ -13,14 +13,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+
+      author: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
       description: {
         type: DataTypes.STRING(100),
         allowNull: false,
         trim: true,
-      },
-      author: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
       },
       rating: {
         type: DataTypes.BIGINT,
