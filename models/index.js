@@ -10,8 +10,10 @@ const db = {}
 
 const User = require("./User")
 const Book = require("./Book")
+const Rental = require("./Rental")
 db.User = User
 db.Book = Book
+db.Rental = Rental
 
 let sequelize
 if (config.use_env_variable) {

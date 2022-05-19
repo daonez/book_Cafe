@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Rentals = sequelize.define(
+  const Rental = sequelize.define(
     "Rental",
     {
       id: {
@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
     }
   )
+  Rental.associate = (db) => {
+    db.Rental.belongsTo(db.Book)
+    db.Rental.belongsTo(db.User)
+  }
 
-  return Rentals
+  return Rental
 }

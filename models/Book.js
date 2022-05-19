@@ -45,6 +45,10 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
     }
   )
+  Book.associate = (db) => {
+    // 유저는 여러 게시글을 작성할 수 있다.
+    db.Book.hasMany(db.Rental)
+  }
 
   return Book
 }
