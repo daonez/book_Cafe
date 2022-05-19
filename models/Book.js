@@ -3,11 +3,11 @@ module.exports = (sequelize, DataTypes) => {
     "Book",
     {
       id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
         allowNull: false,
         unique: true,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
       },
       title: {
         type: DataTypes.STRING(100),
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       rating: {
         type: DataTypes.BIGINT,
-        allowNull: false,
+        allowNull: true,
       },
       isAvailable: {
         type: DataTypes.BOOLEAN,
