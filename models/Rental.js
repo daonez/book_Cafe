@@ -9,28 +9,9 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
-      title: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      description: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        trim: true,
-      },
-      author: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
       rating: {
         type: DataTypes.BIGINT,
         allowNull: false,
-      },
-      isAvailable: {
-        type: DataTypes.BOOLEAN,
-      },
-      publishedDate: {
-        type: DataTypes.DATE,
       },
       dueDate: {
         type: DataTypes.DATE,
@@ -45,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   )
   Rental.associate = (db) => {
-    db.Rental.belongsTo(db.Book)
+    db.Rental.hasMany(db.Book)
     db.Rental.belongsTo(db.User)
   }
 

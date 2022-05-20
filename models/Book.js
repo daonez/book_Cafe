@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
   )
   Book.associate = (db) => {
     // 유저는 여러 게시글을 작성할 수 있다.
-    db.Book.hasMany(db.Rental)
+    db.Book.belongsTo(db.Rental)
   }
 
   return Book
