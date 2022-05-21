@@ -11,10 +11,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       rating: {
         type: DataTypes.BIGINT,
-        allowNull: false,
       },
       dueDate: {
         type: DataTypes.DATE,
+      },
+      rentedBookTitle: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
       },
     },
     {
