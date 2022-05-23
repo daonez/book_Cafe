@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Rentals = sequelize.define(
+  const Rental = sequelize.define(
     "Rental",
     {
       id: {
@@ -9,31 +9,15 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
-      title: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      description: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        trim: true,
-      },
-      author: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
       rating: {
         type: DataTypes.BIGINT,
-        allowNull: false,
-      },
-      isAvailable: {
-        type: DataTypes.BOOLEAN,
-      },
-      publishedDate: {
-        type: DataTypes.DATE,
       },
       dueDate: {
         type: DataTypes.DATE,
+      },
+      rentedBookTitle: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
       },
     },
     {
@@ -44,6 +28,10 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
     }
   )
+  Rental.associate = (db) => {
+    db.Rental.hasMany(db.Book)
+    db.Rental.belongsTo(db.User)
+  }
 
-  return Rentals
+  return Rental
 }

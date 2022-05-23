@@ -3,6 +3,8 @@ const express = require("express")
 const app = express()
 const userRouter = require("./routes/users")
 const bookRouter = require("./routes/books")
+const rentalRouter = require("./routes/rentals")
+
 
 // sql 연결
 const { sequelize } = require("./models")
@@ -21,7 +23,7 @@ app.use(express.json())
 //true면 json객체안에 객체를 더 넣을수있음
 app.use(express.urlencoded({ extended: true }))
 
-app.use("/", [userRouter, bookRouter])
+app.use("/", [userRouter, bookRouter, rentalRouter])
 
 app.get("/", (req, res) => {
   res.send("hello world")

@@ -13,14 +13,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+
+      author: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
       description: {
         type: DataTypes.STRING(100),
         allowNull: false,
         trim: true,
-      },
-      author: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
       },
       rating: {
         type: DataTypes.BIGINT,
@@ -44,6 +45,10 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
     }
   )
+  Book.associate = (db) => {
+    // 유저는 여러 게시글을 작성할 수 있다.
+    db.Book.belongsTo(db.Rental)
+  }
 
   return Book
 }
