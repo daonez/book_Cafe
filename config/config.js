@@ -7,6 +7,7 @@ module.exports = {
     database: "book_cafe",
     host: DB_LOCAL_IP,
     dialect: "mysql",
+    camelCase: true,
   },
   test: {
     username: "root",
