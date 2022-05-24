@@ -7,10 +7,8 @@ const authMiddleWare = require("../middlewares/auth")
 router.post("/rentals", authMiddleWare, async (req, res) => {
   try {
     const { title } = req.body
-    const { email, id } = res.locals.user
+    const { id } = res.locals.user
 
-    const rentedUser = await User.findOne({ where: { email }, raw: true })
-    console.log(rentedUser.email)
     const userId = await User.findOne({ where: { id }, raw: true })
     console.log(userId.id)
     const findBookTitle = await Book.findOne({ where: { title }, raw: true })
@@ -19,6 +17,12 @@ router.post("/rentals", authMiddleWare, async (req, res) => {
     const date = new Date()
     const dueDate = date.setDate(date.getDate() + 3)
 
+    const bookRented = await Rental.create({
+      rentedBookTitle,
+      dueDate,
+
+      UserId: userId.id,
+    })
     res.status(200).json(bookRented)
   } catch (err) {
     console.log(err)

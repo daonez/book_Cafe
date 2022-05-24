@@ -33,12 +33,10 @@ module.exports = (sequelize, DataTypes) => {
   )
   Rental.associate = (db) => {
     db.Rental.hasMany(db.Book, {
-      foreignKey: "rentedUser",
+      onUpdate: "cascade",
       allowNull: false,
     })
-    db.Rental.belongsTo(db.User, {
-      foreignKey: "rentedUser",
-    })
+    db.Rental.belongsTo(db.User)
   }
 
   return Rental
