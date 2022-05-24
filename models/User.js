@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     "User",
     {
       // 스키마 정의
-      id: {
+      Id: {
         type: DataTypes.UUID,
         allowNull: false,
         unique: true,
@@ -31,16 +31,19 @@ module.exports = (sequelize, DataTypes) => {
     {
       charset: "utf8", // 한국어 설정
       collate: "utf8_general_ci", // 한국어 설정
-      tableName: "User", // 테이블 이름
       timestamps: true, // createAt & updateAt 활성화
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
+      camelCase: true,
+      modelName: "User", // express에서 JS 사용하기위한 이름 설정
+      tableName: "users", // 테이블 이름
     }
   )
 
   User.associate = (db) => {
     // 유저는 여러 게시글을 작성할 수 있다.
-    db.User.hasMany(db.Rental)
-    
+    db.User.hasMany(db.Rental, {
+      onDelete: "cascade",
+    })
   }
   return User
 }

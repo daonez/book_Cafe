@@ -19,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      return: {
+        type: DataTypes.BOOLEAN,
+      },
     },
     {
       charset: "utf8", // 한국어 설정
@@ -26,10 +29,14 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "Rentals", // 테이블 이름
       timestamps: true, // createAt & updateAt 활성화
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
+      camelCase: true,
     }
   )
   Rental.associate = (db) => {
-    db.Rental.hasMany(db.Book)
+    db.Rental.hasMany(db.Book, {
+      onUpdate: "cascade",
+      allowNull: false,
+    })
     db.Rental.belongsTo(db.User)
   }
 
