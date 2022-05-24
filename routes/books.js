@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const { Book, User } = require("../models")
+const authMiddleWare = require("../middlewares/auth")
 
 //get all list of books
 router.get("/books", async (req, res) => {

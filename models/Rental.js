@@ -19,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      return: {
+        type: DataTypes.BOOLEAN,
+      },
     },
     {
       charset: "utf8", // 한국어 설정
@@ -29,8 +32,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   )
   Rental.associate = (db) => {
-    db.Rental.hasMany(db.Book)
-    db.Rental.belongsTo(db.User)
+    db.Rental.hasMany(db.Book, {
+      foreignKey: "rentedUser",
+      allowNull: false,
+    })
+    db.Rental.belongsTo(db.User, {
+      foreignKey: "rentedUser",
+    })
   }
 
   return Rental

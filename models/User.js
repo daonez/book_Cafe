@@ -39,8 +39,11 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = (db) => {
     // 유저는 여러 게시글을 작성할 수 있다.
-    db.User.hasMany(db.Rental)
-    
+    db.User.hasMany(db.Rental, {
+      foreignKey: "userId",
+
+      onDelete: "cascade",
+    })
   }
   return User
 }
