@@ -18,9 +18,9 @@ router.post("/rentals", authMiddleWare, async (req, res) => {
     const dueDate = date.setDate(date.getDate() + 3)
 
     const bookRented = await Rental.create({
-      rentedBookTitle,
       dueDate,
-
+      rentedBookTitle,
+      return: false,
       UserId: userId.id,
     })
     res.status(200).json(bookRented)
@@ -31,15 +31,27 @@ router.post("/rentals", authMiddleWare, async (req, res) => {
 })
 
 //edit rented book to be available
-
-//edit rented book to extend
 router.patch("/rentals/:id", async (req, res) => {
   try {
     const { id } = req.params
-    const findBookToExtend = await Rental.findOne({ where: { id }, attributes: [] })
+    const findBookToReturn = await Rental.findOne({ where: { id } })
+    console.log(findBookToReturn)
+    const date = new Date()
+    const dueDate = date.setDate(date.getDate())
+    const returnBook = await findBookToReturn.update(
+      {
+        dueDate,
+        return: true,
+      },
+      { returning: true, plain: true }
+    )
+    res.status(200).json(returnBook)
   } catch (error) {
+    console.log(error)
     res.status(400).send(error)
   }
 })
+//edit rented book to extend
+router.patch('/rentals/:id/extend')
 
 module.exports = router

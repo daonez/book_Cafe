@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     "User",
     {
       // 스키마 정의
-      Id: {
+      id: {
         type: DataTypes.UUID,
         allowNull: false,
         unique: true,
@@ -33,9 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       collate: "utf8_general_ci", // 한국어 설정
       timestamps: true, // createAt & updateAt 활성화
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
-      camelCase: true,
-      modelName: "User", // express에서 JS 사용하기위한 이름 설정
-      tableName: "users", // 테이블 이름
+      tableName: "Users", // 테이블 이름
     }
   )
 
