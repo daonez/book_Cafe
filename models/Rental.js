@@ -17,10 +17,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       rentedBookTitle: {
         type: DataTypes.STRING(100),
-        allowNull: false,
       },
-      return: {
+      isReturned: {
         type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
     {
@@ -32,10 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   )
   Rental.associate = (db) => {
-    db.Rental.hasMany(db.Book, {
-      onUpdate: "cascade",
-      allowNull: false,
-    })
+    db.Rental.belongsTo(db.Book)
     db.Rental.belongsTo(db.User)
   }
 

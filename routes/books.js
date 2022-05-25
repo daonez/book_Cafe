@@ -24,7 +24,7 @@ router.get("/books/:id", async (req, res) => {
   try {
     const book = await Book.findOne({
       where: { id },
-      attributes: ["id", "title", "rating", "isAvailable", "dueDate"],
+      attributes: ["id", "title", "author", "description", "rating", "isAvailable", "dueDate"],
       raw: true,
     })
     res.status(200).json(book)

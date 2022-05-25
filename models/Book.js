@@ -23,12 +23,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         trim: true,
       },
-      rating: {
-        type: DataTypes.BIGINT,
-        allowNull: true,
-      },
       isAvailable: {
         type: DataTypes.BOOLEAN,
+        defaultValue: true,
       },
       publishedDate: {
         type: DataTypes.DATE,
@@ -47,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
   )
   Book.associate = (db) => {
     // 유저는 여러 게시글을 작성할 수 있다.
-    db.Book.belongsTo(db.Rental)
+    db.Book.hasMany(db.Rental)
   }
 
   return Book
