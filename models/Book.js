@@ -33,6 +33,10 @@ module.exports = (sequelize, DataTypes) => {
       dueDate: {
         type: DataTypes.DATE,
       },
+      averageRating: {
+        
+        type: DataTypes.DECIMAL(3, 2), //3.25 3숫자 2자리수
+      },
     },
     {
       charset: "utf8", // 한국어 설정

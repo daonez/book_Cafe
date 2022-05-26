@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      isExtended: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
     {
       charset: "utf8", // 한국어 설정
