@@ -24,7 +24,7 @@ router.get("/books/:id", async (req, res) => {
   try {
     const book = await Book.findOne({
       where: { id },
-      attributes: ["id", "title", "rating", "isAvailable", "dueDate"],
+      attributes: ["id", "title", "author", "description", "rating", "isAvailable", "dueDate"],
       raw: true,
     })
     res.status(200).json(book)
@@ -41,6 +41,7 @@ router.post("/books/new", async (req, res) => {
       title,
       author,
       description,
+      publishedDate,
     })
     res.status(201).json(createBook)
   } catch (err) {
@@ -52,7 +53,7 @@ router.post("/books/new", async (req, res) => {
 //edit a book
 router.patch("/books/:id", async (req, res) => {
   const { id } = req.params
-  const { title, author, description, rating, isAvailable } = req.body
+  const { title, author, description, publishedDate, isAvailable } = req.body
   try {
     const findBook = await Book.findOne({ where: { id } })
     const editBook = await findBook.update(
@@ -60,7 +61,7 @@ router.patch("/books/:id", async (req, res) => {
         title,
         author,
         description,
-        rating,
+        publishedDate,
         isAvailable,
       },
       { returning: true, plain: true }

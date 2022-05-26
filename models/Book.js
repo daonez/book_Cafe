@@ -23,18 +23,19 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         trim: true,
       },
-      rating: {
-        type: DataTypes.BIGINT,
-        allowNull: true,
-      },
       isAvailable: {
         type: DataTypes.BOOLEAN,
+        defaultValue: true,
       },
       publishedDate: {
         type: DataTypes.DATE,
       },
       dueDate: {
         type: DataTypes.DATE,
+      },
+      averageRating: {
+        
+        type: DataTypes.DECIMAL(3, 2), //3.25 3숫자 2자리수
       },
     },
     {
@@ -43,12 +44,11 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "Books", // 테이블 이름
       timestamps: true, // createAt & updateAt 활성화
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
-      camelCase: true,
     }
   )
   Book.associate = (db) => {
     // 유저는 여러 게시글을 작성할 수 있다.
-    db.Book.belongsTo(db.Rental)
+    db.Book.hasMany(db.Rental)
   }
 
   return Book

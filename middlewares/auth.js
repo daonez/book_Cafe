@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
   const [tokenType, tokenValue] = authorization.split(" ")
   try {
     const { email } = jwt.verify(tokenValue, process.env.JWT_SECRET)
-    console.log(tokenValue)
+
     await User.findOne({
       where: { email },
     }).then((user) => {
