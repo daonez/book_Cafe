@@ -3,6 +3,40 @@ const router = express.Router()
 const { Book, User, Rental } = require("../models")
 const authMiddleWare = require("../middlewares/auth")
 
+//get all list of rentals
+router.get("/rentals", async (req, res) => {
+  try {
+    const user = await User.findAll({
+      raw: true,
+    })
+    console.log(user)
+    //find all rentals
+    const getAllRentals = await Rental.findAll({
+      attributes: ["id", "rating", "dueDate", "rentedBookTitle", "isReturned", "UserId"],
+      raw: true,
+      include: [
+        { model: Book, attributes: ["averageRating"] },
+        { model: User, attributes: ["nickname"] },
+      ],
+    })
+    //most recent rented book
+    getAllRentals.sort((a, b) => b.createdAt - a.createdAt)
+
+    const mapRentals = {
+      rentals: getAllRentals.map((rents) => {
+        return {
+          rents,
+        }
+      }),
+    }
+
+    res.status(200).json(mapRentals)
+  } catch (err) {
+    console.log(err)
+    res.status(400).send(err)
+  }
+})
+
 //request to rent a book
 router.post("/rentals", authMiddleWare, async (req, res) => {
   try {
@@ -128,9 +162,9 @@ router.post("/rentals/:id/rate", authMiddleWare, async (req, res) => {
       attributes: ["id", "rating", "isExtended", "dueDate", "BookId"],
     })
     //get average numbers for book
-    const totalRatings = await Rental.findAll({ attributes: ["rating"], raw: true })
-    const ratingsArray = totalRatings
-    const numbers = ratingsArray.map((rates) => rates.rating)
+    const allRatings = await Rental.findAll({ attributes: ["rating"], raw: true })
+    const ratingArray = allRatings
+    const numbers = ratingArray.map((rates) => rates.rating)
     console.log(numbers)
     const filterNum = numbers.filter(Number)
     const total = filterNum.length
