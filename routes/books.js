@@ -41,7 +41,6 @@ router.post("/books/new", async (req, res) => {
       title,
       author,
       description,
-      publishedDate,
     })
     res.status(201).json(createBook)
   } catch (err) {

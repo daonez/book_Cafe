@@ -18,8 +18,8 @@ router.post("/rentals", authMiddleWare, async (req, res) => {
 
     //1 is true, 0 is false
     if (book.isAvailable === 1) {
-      const date = new Date()
-      const dueDate = date.setDate(date.getDate() + 3)
+      let dueDate = new Date()
+      dueDate.setDate(dueDate.getDate() + 3)
       const bookRented = await Rental.create({
         dueDate,
         rentedBookTitle: book.title,
@@ -48,7 +48,7 @@ router.patch("/rentals/:id", authMiddleWare, async (req, res) => {
     const { id } = req.params
     const { email } = res.locals.user
 
-    const checkUser = await User.findOne({ where: { email } })
+    const user = await User.findOne({ where: { email } })
     // console.log(checkUser.id)
     const bookRented = await Rental.findOne({ where: { id } })
     // console.log(bookRented.isReturned)
@@ -58,7 +58,7 @@ router.patch("/rentals/:id", authMiddleWare, async (req, res) => {
     if (bookRented.isReturned === false) {
       const returnBook = await bookRented.update({
         isReturned: true,
-        UserId: checkUser.id,
+        UserId: user.id,
       })
       await Book.update(
         { isAvailable: true },
@@ -81,24 +81,23 @@ router.patch("/rentals/:id/extend", authMiddleWare, async (req, res) => {
     const { id } = req.params
     const { email } = res.locals.user
 
-    const checkUser = await User.findOne({ where: { email } })
+    const user = await User.findOne({ where: { email } })
     // console.log(checkUser.id)
     const bookRented = await Rental.findOne({
       where: { id },
       attributes: ["id", "isExtended", "dueDate", "BookId"],
     })
     console.log(bookRented.BookId)
-    const date = new Date(bookRented.dueDate)
-    const date1 = date.setDate(date.getDate() + 3)
-    const extendedDate = date + date1
+    let date = new Date(bookRented.dueDate)
+    date.setDate(date.getDate() + 3)
     // const dueDate = extendedDate
     // console.log(dueDate)
 
     if (bookRented.isExtended === false) {
       const extendBook = await bookRented.update({
-        dueDate: extendedDate,
+        dueDate: date,
         isExtended: true,
-        UserId: checkUser.id,
+        UserId: user.id,
         BookId: bookRented.BookId,
       })
       await Book.update(
@@ -113,6 +112,51 @@ router.patch("/rentals/:id/extend", authMiddleWare, async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(400).send(error)
+  }
+})
+
+//rate a book when returned
+router.post("/rentals/:id/rate", authMiddleWare, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { email } = res.locals.user
+    const { rating } = req.body
+    const user = await User.findOne({ where: { email } })
+    // console.log(checkUser.id)
+    const bookRented = await Rental.findOne({
+      where: { id },
+      attributes: ["id", "rating", "isExtended", "dueDate", "BookId"],
+    })
+    //get average numbers for book
+    const totalRatings = await Rental.findAll({ attributes: ["rating"], raw: true })
+    const ratingsArray = totalRatings
+    const numbers = ratingsArray.map((rates) => rates.rating)
+    console.log(numbers)
+    const filterNum = numbers.filter(Number)
+    const total = filterNum.length
+    console.log(total)
+    const reduceNum = numbers.reduce((partialSum, a) => partialSum + a, 0)
+    const averageNum = reduceNum / total
+    console.log(averageNum)
+
+    //range 0~5 only
+    if (rating >= 0 && rating <= 5) {
+      const rateBook = await bookRented.update({
+        rating,
+        UserId: user.id,
+      })
+      await Book.update(
+        { averageRating: averageNum },
+        { where: { id: bookRented.BookId } },
+        { returning: true, plain: true }
+      )
+      res.status(200).json(rateBook)
+    } else {
+      res.send("sorry rating is only from 0 to 5")
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(400).send(err)
   }
 })
 
