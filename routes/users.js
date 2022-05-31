@@ -62,16 +62,51 @@ router.post("/login", async (req, res) => {
   }
 })
 
+//get user history
+router.get("/users/me/history", authMiddleWare, async (req, res) => {
+  try {
+    const { id } = res.locals.user
+
+    const user = await User.findOne({
+      where: { id },
+      raw: true,
+    })
+
+    console.log(user.id)
+
+    const rentedHistory = await Rental.findAll({
+      where: { UserId: user.id },
+      raw: true,
+      attributes: [
+        "rentedBookTitle",
+        "createdAt",
+        "updatedAt",
+        "isReturned",
+        "isExtended",
+        "dueDate",
+        "UserId",
+      ],
+    })
+    rentedHistory.sort((a, b) => b.updatedAt - a.updatedAt)
+
+    console.log(rentedHistory)
+    const rentHistory = {
+      rentedHistory: rentedHistory.map((books) => {
+        return {
+          books,
+        }
+      }),
+    }
+    res.send(rentHistory)
+  } catch (err) {
+    console.log(err)
+    res.status(400).send(err)
+  }
+})
 //get all user history
 router.get("/users/:id/history", authMiddleWare, async (req, res) => {
   try {
     const { id } = req.params
-    const { email } = res.locals.user
-    const user = await User.findOne({
-      where: { email },
-      raw: true,
-    })
-    console.log(user)
 
     const userHistory = await Rental.findAll({
       where: { UserId: id },
@@ -91,28 +126,6 @@ router.get("/users/:id/history", authMiddleWare, async (req, res) => {
     userHistory.sort((a, b) => b.updatedAt - a.updatedAt)
 
     res.status(200).json(userHistory)
-  } catch (err) {
-    console.log(err)
-    res.status(400).send(err)
-  }
-})
-
-//get user history
-
-router.post("/users/me/history", authMiddleWare, async (req, res) => {
-  try {
-    const { user } = res.locals
-    console.log(user)
-    const rentedBooks = await Rental.findAll({
-      where: { id },
-      attributes: ["id", "title", "isAvailable", "dueDate"],
-      raw: true,
-      include: [
-        { model: Book, attributes: ["averageRating"] },
-        { model: User, attributes: ["nickname"] },
-      ],
-    })
-    res.status(200).json(user)
   } catch (err) {
     console.log(err)
     res.status(400).send(err)
