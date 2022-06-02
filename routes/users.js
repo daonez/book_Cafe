@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
 router.get("/users/me/history", authMiddleWare, async (req, res) => {
   try {
     const { id } = res.locals.user
-    const query = req.query.isOnGoing
+    const query = req.query
     const user = await User.findOne({
       where: { id },
       raw: true,
@@ -76,30 +76,25 @@ router.get("/users/me/history", authMiddleWare, async (req, res) => {
       where: { UserId: user.id },
       raw: true,
       attributes: [
+        "id",
         "rentedBookTitle",
         "createdAt",
         "updatedAt",
         "isReturned",
         "isExtended",
         "dueDate",
-        "UserId",
+        "BookId",
       ],
     })
 
     rentedHistory.sort((a, b) => b.updatedAt - a.updatedAt)
-    const rentHistory = {
-      rentedHistory: rentedHistory.map((books) => {
-        return {
-          books,
-        }
-      }),
-    }
-    if (query === "true") {
-      res.status(200).json(rentHistory)
-    } else if (query === "false") {
+
+    if (query.isReturned === "true") {
+      res.status(200).json(rentedHistory)
+    } else if (query.isReturned === "false") {
       res.status(200).json("something went wrong")
     } else {
-      res.status(200).json(rentHistory)
+      res.status(200).json(rentedHistory)
     }
   } catch (err) {
     res.status(400).send(err)
@@ -109,7 +104,7 @@ router.get("/users/me/history", authMiddleWare, async (req, res) => {
 router.get("/users/:id/history", authMiddleWare, async (req, res) => {
   try {
     const { id } = req.params
-    const query = req.query.isOnGoing
+    const query = req.query
 
     const userHistory = await Rental.findAll({
       where: { UserId: id },

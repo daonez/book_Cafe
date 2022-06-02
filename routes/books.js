@@ -7,7 +7,7 @@ const authMiddleWare = require("../middlewares/auth")
 router.get("/books", async (req, res) => {
   try {
     const getAllBooks = await Book.findAll({
-      attributes: ["title", "author", "description", "rating"],
+      attributes: ["title", "author", "description", "averageRating"],
       raw: true,
     })
     res.status(200).json(getAllBooks)
@@ -23,7 +23,15 @@ router.get("/books/:id", async (req, res) => {
   try {
     const book = await Book.findOne({
       where: { id },
-      attributes: ["id", "title", "author", "description", "rating", "isAvailable", "dueDate"],
+      attributes: [
+        "id",
+        "title",
+        "author",
+        "description",
+        "averageRating",
+        "isAvailable",
+        "dueDate",
+      ],
       raw: true,
     })
     res.status(200).json(book)
