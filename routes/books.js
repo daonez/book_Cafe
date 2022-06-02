@@ -12,7 +12,6 @@ router.get("/books", async (req, res) => {
     })
     res.status(200).json(getAllBooks)
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
@@ -44,7 +43,6 @@ router.post("/books/new", async (req, res) => {
     })
     res.status(201).json(createBook)
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
@@ -67,7 +65,6 @@ router.patch("/books/:id", async (req, res) => {
     )
     res.status(200).json(editBook)
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })

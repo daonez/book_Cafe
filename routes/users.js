@@ -95,7 +95,6 @@ router.get("/users/me/history", authMiddleWare, async (req, res) => {
       }),
     }
     if (query === "true") {
-      console.log(rentHistory)
       res.status(200).json(rentHistory)
     } else if (query === "false") {
       res.status(200).json("something went wrong")
@@ -103,7 +102,6 @@ router.get("/users/me/history", authMiddleWare, async (req, res) => {
       res.status(200).json(rentHistory)
     }
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
@@ -127,7 +125,7 @@ router.get("/users/:id/history", authMiddleWare, async (req, res) => {
       ],
       raw: true,
     })
-    console.log(userHistory)
+
     userHistory.sort((a, b) => b.updatedAt - a.updatedAt)
     if (query === "true") {
       res.status(200).json(userHistory)
@@ -137,11 +135,8 @@ router.get("/users/:id/history", authMiddleWare, async (req, res) => {
       res.status(200).json(userHistory)
     }
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
-
-//get books rented and due date
 
 module.exports = router
