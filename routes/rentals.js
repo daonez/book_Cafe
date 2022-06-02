@@ -9,9 +9,9 @@ router.get("/rentals", async (req, res) => {
     const user = await User.findAll({
       raw: true,
     })
-    console.log(user)
+
     //find all rentals
-    const getAllRentals = await Rental.findAll({
+    const allRentals = await Rental.findAll({
       attributes: ["id", "rating", "dueDate", "rentedBookTitle", "isReturned", "UserId"],
       raw: true,
       include: [
@@ -20,10 +20,10 @@ router.get("/rentals", async (req, res) => {
       ],
     })
     //most recent rented book
-    getAllRentals.sort((a, b) => b.createdAt - a.createdAt)
+    allRentals.sort((a, b) => b.createdAt - a.createdAt)
 
     const mapRentals = {
-      rentals: getAllRentals.map((rents) => {
+      rentals: allRentals.map((rents) => {
         return {
           rents,
         }
@@ -32,7 +32,6 @@ router.get("/rentals", async (req, res) => {
 
     res.status(200).json(mapRentals)
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
@@ -71,7 +70,6 @@ router.post("/rentals", authMiddleWare, async (req, res) => {
       res.status(400).json("sorry book is unavailable")
     }
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
@@ -83,10 +81,8 @@ router.patch("/rentals/:id", authMiddleWare, async (req, res) => {
     const { email } = res.locals.user
 
     const user = await User.findOne({ where: { email } })
-    // console.log(checkUser.id)
+
     const bookRented = await Rental.findOne({ where: { id } })
-    // console.log(bookRented.isReturned)
-    console.log(bookRented.UserId)
 
     //0 , 1 doesnt work only false true
     if (bookRented.isReturned === false) {
@@ -99,13 +95,12 @@ router.patch("/rentals/:id", authMiddleWare, async (req, res) => {
         { where: { id: bookRented.BookId } },
         { returning: true, plain: true }
       )
-      console.log(returnBook)
+
       res.status(200).json(returnBook)
     } else {
       res.status(400).send("something went wrong")
     }
   } catch (error) {
-    console.log(error)
     res.status(400).send(error)
   }
 })
@@ -116,16 +111,14 @@ router.patch("/rentals/:id/extend", authMiddleWare, async (req, res) => {
     const { email } = res.locals.user
 
     const user = await User.findOne({ where: { email } })
-    // console.log(checkUser.id)
+
     const bookRented = await Rental.findOne({
       where: { id },
       attributes: ["id", "isExtended", "dueDate", "BookId"],
     })
-    console.log(bookRented.BookId)
+
     let date = new Date(bookRented.dueDate)
     date.setDate(date.getDate() + 3)
-    // const dueDate = extendedDate
-    // console.log(dueDate)
 
     if (bookRented.isExtended === false) {
       const extendBook = await bookRented.update({
@@ -144,7 +137,6 @@ router.patch("/rentals/:id/extend", authMiddleWare, async (req, res) => {
       res.status(400).send("book can only be extended once")
     }
   } catch (error) {
-    console.log(error)
     res.status(400).send(error)
   }
 })
@@ -156,7 +148,7 @@ router.post("/rentals/:id/rate", authMiddleWare, async (req, res) => {
     const { email } = res.locals.user
     const { rating } = req.body
     const user = await User.findOne({ where: { email } })
-    // console.log(checkUser.id)
+
     const bookRented = await Rental.findOne({
       where: { id },
       attributes: ["id", "rating", "isExtended", "dueDate", "BookId"],
@@ -165,13 +157,12 @@ router.post("/rentals/:id/rate", authMiddleWare, async (req, res) => {
     const allRatings = await Rental.findAll({ attributes: ["rating"], raw: true })
     const ratingArray = allRatings
     const numbers = ratingArray.map((rates) => rates.rating)
-    console.log(numbers)
+
     const filterNum = numbers.filter(Number)
     const total = filterNum.length
-    console.log(total)
+
     const reduceNum = numbers.reduce((partialSum, a) => partialSum + a, 0)
     const averageNum = reduceNum / total
-    console.log(averageNum)
 
     //range 0~5 only
     if (rating >= 0 && rating <= 5) {
@@ -189,7 +180,6 @@ router.post("/rentals/:id/rate", authMiddleWare, async (req, res) => {
       res.send("sorry rating is only from 0 to 5")
     }
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
