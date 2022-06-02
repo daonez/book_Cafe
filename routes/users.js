@@ -66,13 +66,11 @@ router.post("/login", async (req, res) => {
 router.get("/users/me/history", authMiddleWare, async (req, res) => {
   try {
     const { id } = res.locals.user
-
+    const query = req.query.isOnGoing
     const user = await User.findOne({
       where: { id },
       raw: true,
     })
-
-    console.log(user.id)
 
     const rentedHistory = await Rental.findAll({
       where: { UserId: user.id },
@@ -87,9 +85,8 @@ router.get("/users/me/history", authMiddleWare, async (req, res) => {
         "UserId",
       ],
     })
-    rentedHistory.sort((a, b) => b.updatedAt - a.updatedAt)
 
-    console.log(rentedHistory)
+    rentedHistory.sort((a, b) => b.updatedAt - a.updatedAt)
     const rentHistory = {
       rentedHistory: rentedHistory.map((books) => {
         return {
@@ -97,7 +94,14 @@ router.get("/users/me/history", authMiddleWare, async (req, res) => {
         }
       }),
     }
-    res.send(rentHistory)
+    if (query === "true") {
+      console.log(rentHistory)
+      res.status(200).json(rentHistory)
+    } else if (query === "false") {
+      res.status(200).json("something went wrong")
+    } else {
+      res.status(200).json(rentHistory)
+    }
   } catch (err) {
     console.log(err)
     res.status(400).send(err)
@@ -107,6 +111,7 @@ router.get("/users/me/history", authMiddleWare, async (req, res) => {
 router.get("/users/:id/history", authMiddleWare, async (req, res) => {
   try {
     const { id } = req.params
+    const query = req.query.isOnGoing
 
     const userHistory = await Rental.findAll({
       where: { UserId: id },
@@ -124,8 +129,13 @@ router.get("/users/:id/history", authMiddleWare, async (req, res) => {
     })
     console.log(userHistory)
     userHistory.sort((a, b) => b.updatedAt - a.updatedAt)
-
-    res.status(200).json(userHistory)
+    if (query === "true") {
+      res.status(200).json(userHistory)
+    } else if (query === "false") {
+      res.status(200).json("something went wrong")
+    } else {
+      res.status(200).json(userHistory)
+    }
   } catch (err) {
     console.log(err)
     res.status(400).send(err)
