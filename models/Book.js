@@ -34,7 +34,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
       },
       averageRating: {
-        
         type: DataTypes.DECIMAL(3, 2), //3.25 3숫자 2자리수
       },
     },
