@@ -2,6 +2,8 @@ const express = require("express")
 const router = express.Router()
 const { Book, User } = require("../models")
 const authMiddleWare = require("../middlewares/auth")
+const csvController = require("../csvs/csvController")
+const upload = require("../middlewares/bookUpload")
 
 //get all list of books
 router.get("/books", async (req, res) => {
@@ -54,6 +56,13 @@ router.post("/books/new", async (req, res) => {
     res.status(400).send(err)
   }
 })
+
+router.post("/books/upload"),
+  upload.single("file"),
+  csvController.upload,
+  async (req, res) => {
+    res.json({ message: "uploaded file success" })
+  }
 
 //edit a book
 router.patch("/books/:id", async (req, res) => {
