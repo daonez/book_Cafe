@@ -146,40 +146,48 @@ router.post("/rentals/:id/rate", authMiddleWare, async (req, res) => {
   try {
     const { id } = req.params
     const { email } = res.locals.user
+    //rating =5
     const { rating } = req.body
     const user = await User.findOne({ where: { email } })
-
     const bookRented = await Rental.findOne({
       where: { id },
       attributes: ["id", "rating", "isExtended", "dueDate", "BookId"],
     })
-    //get average numbers for book
-    const allRatings = await Rental.findAll({ attributes: ["rating"], raw: true })
-    const ratingArray = allRatings
-    const numbers = ratingArray.map((rates) => rates.rating)
 
-    const filterNum = numbers.filter(Number)
-    const total = filterNum.length
-
-    const reduceNum = numbers.reduce((partialSum, a) => partialSum + a, 0)
-    const averageNum = reduceNum / total
-
-    //range 0~5 only
     if (rating >= 0 && rating <= 5) {
-      const rateBook = await bookRented.update({
+      await bookRented.update({
         rating,
-        UserId: user.id,
       })
-      await Book.update(
-        { averageRating: averageNum },
-        { where: { id: bookRented.BookId } },
-        { returning: true, plain: true }
-      )
-      res.status(200).json(rateBook)
     } else {
       res.send("sorry rating is only from 0 to 5")
     }
+
+    //get average numbers for book
+    const ratingArray = await Rental.findAll({
+      where: { BookId: bookRented.BookId },
+      attributes: ["rating"],
+      raw: true,
+    })
+
+    const numbers = ratingArray.map((rates) => rates.rating)
+    //1,5
+    const filterNum = numbers.filter(Number)
+
+    const arrLength = filterNum.length
+
+    const reduceNum = filterNum.reduce((partialSum, a) => partialSum + a, 0)
+    const averageNum = reduceNum / arrLength
+    console.log(averageNum)
+    //range 0~5 only
+
+    await Book.update(
+      { averageRating: averageNum },
+      { where: { id: bookRented.BookId } },
+      { returning: true, plain: true }
+    )
+    res.status(200).json("book rated")
   } catch (err) {
+    console.log(err)
     res.status(400).send(err)
   }
 })

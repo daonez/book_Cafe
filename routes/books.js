@@ -2,17 +2,18 @@ const express = require("express")
 const router = express.Router()
 const { Book, User } = require("../models")
 const authMiddleWare = require("../middlewares/auth")
+const csvController = require("../csvs/csvController")
+const upload = require("../middlewares/bookUpload")
 
 //get all list of books
 router.get("/books", async (req, res) => {
   try {
     const getAllBooks = await Book.findAll({
-      attributes: ["title", "author", "description", "rating"],
+      attributes: ["title", "author", "description", "averageRating"],
       raw: true,
     })
     res.status(200).json(getAllBooks)
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
@@ -24,7 +25,15 @@ router.get("/books/:id", async (req, res) => {
   try {
     const book = await Book.findOne({
       where: { id },
-      attributes: ["id", "title", "author", "description", "rating", "isAvailable", "dueDate"],
+      attributes: [
+        "id",
+        "title",
+        "author",
+        "description",
+        "averageRating",
+        "isAvailable",
+        "dueDate",
+      ],
       raw: true,
     })
     res.status(200).json(book)
@@ -44,10 +53,16 @@ router.post("/books/new", async (req, res) => {
     })
     res.status(201).json(createBook)
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
+
+router.post("/books/upload"),
+  upload.single("file"),
+  csvController.upload,
+  async (req, res) => {
+    res.json({ message: "uploaded file success" })
+  }
 
 //edit a book
 router.patch("/books/:id", async (req, res) => {
@@ -67,7 +82,6 @@ router.patch("/books/:id", async (req, res) => {
     )
     res.status(200).json(editBook)
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })

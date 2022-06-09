@@ -3,6 +3,7 @@ const router = express.Router()
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const { Book, User, Rental } = require("../models")
+
 const authMiddleWare = require("../middlewares/auth")
 
 //register
@@ -66,38 +67,62 @@ router.post("/login", async (req, res) => {
 router.get("/users/me/history", authMiddleWare, async (req, res) => {
   try {
     const { id } = res.locals.user
-
+    const { onGoing } = req.query
     const user = await User.findOne({
       where: { id },
       raw: true,
     })
+    if (onGoing === "false") {
+      const returnedBooks = await Rental.findAll({
+        where: { isReturned: true },
+        raw: true,
+        attributes: [
+          "id",
+          "rentedBookTitle",
+          "createdAt",
+          "updatedAt",
+          "isReturned",
+          "isExtended",
+          "dueDate",
+          "BookId",
+        ],
+      })
+      res.status(200).json(returnedBooks)
+    } else if (onGoing === "true") {
+      const notReturned = await Rental.findAll({
+        where: { isReturned: false },
+        raw: true,
+        attributes: [
+          "id",
+          "rentedBookTitle",
+          "createdAt",
+          "updatedAt",
+          "isReturned",
+          "isExtended",
+          "dueDate",
+          "BookId",
+        ],
+      })
+      res.status(200).json(notReturned)
+    } else {
+      const rentedHistory = await Rental.findAll({
+        where: { UserId: user.id },
+        raw: true,
+        attributes: [
+          "id",
+          "rentedBookTitle",
+          "createdAt",
+          "updatedAt",
+          "isReturned",
+          "isExtended",
+          "dueDate",
+          "BookId",
+        ],
+      })
 
-    console.log(user.id)
-
-    const rentedHistory = await Rental.findAll({
-      where: { UserId: user.id },
-      raw: true,
-      attributes: [
-        "rentedBookTitle",
-        "createdAt",
-        "updatedAt",
-        "isReturned",
-        "isExtended",
-        "dueDate",
-        "UserId",
-      ],
-    })
-    rentedHistory.sort((a, b) => b.updatedAt - a.updatedAt)
-
-    console.log(rentedHistory)
-    const rentHistory = {
-      rentedHistory: rentedHistory.map((books) => {
-        return {
-          books,
-        }
-      }),
+      rentedHistory.sort((a, b) => b.updatedAt - a.updatedAt)
+      res.status(200).json(rentedHistory)
     }
-    res.send(rentHistory)
   } catch (err) {
     console.log(err)
     res.status(400).send(err)
@@ -107,31 +132,63 @@ router.get("/users/me/history", authMiddleWare, async (req, res) => {
 router.get("/users/:id/history", authMiddleWare, async (req, res) => {
   try {
     const { id } = req.params
+    const { onGoing } = req.query
 
-    const userHistory = await Rental.findAll({
-      where: { UserId: id },
-      attributes: [
-        "id",
-        "rating",
-        "dueDate",
-        "rentedBookTitle",
-        "isReturned",
-        "isExtended",
-        "UserId",
-        "BookId",
-      ],
-      raw: true,
-    })
-    console.log(userHistory)
-    userHistory.sort((a, b) => b.updatedAt - a.updatedAt)
+    if (onGoing === "true") {
+      const notReturned = await Rental.findAll({
+        where: { isReturned: false, UserId: id },
+        raw: true,
+        attributes: [
+          "id",
+          "rentedBookTitle",
+          "createdAt",
+          "updatedAt",
+          "isReturned",
+          "isExtended",
+          "dueDate",
+          "BookId",
+          "UserId",
+        ],
+      })
+      res.status(200).json(notReturned)
+    } else if (onGoing === "false") {
+      const returnedBooks = await Rental.findAll({
+        where: { isReturned: true, UserId: id },
+        raw: true,
+        attributes: [
+          "id",
+          "rentedBookTitle",
+          "createdAt",
+          "updatedAt",
+          "isReturned",
+          "isExtended",
+          "dueDate",
+          "BookId",
+        ],
+      })
+      res.status(200).json(returnedBooks)
+    } else {
+      const userHistory = await Rental.findAll({
+        where: { UserId: id },
+        attributes: [
+          "id",
+          "rating",
+          "dueDate",
+          "rentedBookTitle",
+          "isReturned",
+          "isExtended",
+          "UserId",
+          "BookId",
+        ],
+        raw: true,
+      })
 
-    res.status(200).json(userHistory)
+      userHistory.sort((a, b) => b.updatedAt - a.updatedAt)
+      res.status(200).json(userHistory)
+    }
   } catch (err) {
-    console.log(err)
     res.status(400).send(err)
   }
 })
-
-//get books rented and due date
 
 module.exports = router
