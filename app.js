@@ -1,6 +1,10 @@
 require("dotenv").config()
 const express = require("express")
 const app = express()
+const userRouter = require("./routes/users")
+const bookRouter = require("./routes/books")
+const rentalRouter = require("./routes/rentals")
+
 
 // sql 연결
 const { sequelize } = require("./models")
@@ -12,6 +16,14 @@ sequelize
   .catch((err) => {
     console.error(err)
   })
+
+//미들웨어
+//body 읽기
+app.use(express.json())
+//true면 json객체안에 객체를 더 넣을수있음
+app.use(express.urlencoded({ extended: true }))
+
+app.use("/", [userRouter, bookRouter, rentalRouter])
 
 app.get("/", (req, res) => {
   res.send("hello world")

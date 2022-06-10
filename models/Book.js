@@ -3,13 +3,17 @@ module.exports = (sequelize, DataTypes) => {
     "Book",
     {
       id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
         allowNull: false,
         unique: true,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
       },
       title: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      author: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
@@ -18,22 +22,18 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         trim: true,
       },
-      author: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      rating: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-      },
       isAvailable: {
         type: DataTypes.BOOLEAN,
+        defaultValue: true,
       },
       publishedDate: {
         type: DataTypes.DATE,
       },
       dueDate: {
         type: DataTypes.DATE,
+      },
+      averageRating: {
+        type: DataTypes.DECIMAL(3, 2), //3.25 3숫자 2자리수
       },
     },
     {
@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true, // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
     }
   )
+  Book.associate = (db) => {
+    // 유저는 여러 게시글을 작성할 수 있다.
+    db.Book.hasMany(db.Rental)
+  }
 
   return Book
 }
